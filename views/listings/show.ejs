@@ -1,0 +1,48 @@
+<% layout("layouts/boilerplate") %>
+
+    <body>
+        <div class="container mt-4 ">
+            <h2>Listing for - <%= listing.title %>
+            </h2>
+            <div class="row justify-content-center">
+                <div class="col-md-8 offset-3">
+                    <div class="card mt-3 mb-3">
+                        <img src="<%= listing.image %>" class="card-img-top show-img" alt="Property view">
+                        <div class="card-body mt-3">
+                            <h5 class="card-title">
+                                <%= listing.title %>
+                            </h5>
+                            <div class="details d-flex flex-row justify-content-between">
+                                <div class="description">
+                                    <p>Description: <%= listing.description %>
+                                    </p>
+                                </div>
+                                <div class="extra ">
+                                    <p>Price: ₹<%= listing.price.toLocaleString("en-IN") %>/night</p>
+                                    <p>Location: <%= listing.location %>
+                                    </p>
+                                    <p>Country: <%= listing.country %>
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 offset-2 btns">
+                        <div class="col-auto">
+                            <form action="/listings/<%= listing._id %>/edit" method="get">
+                                <button type="submit" class="btn  edit-btn px-4">Edit</button>
+                            </form>
+                        </div>
+                        <div class="col-auto">
+                            <form action="/listings/<%= listing._id %>?_method=delete" method="post">
+                                <button type="submit" class="btn btn-dark px-4">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
