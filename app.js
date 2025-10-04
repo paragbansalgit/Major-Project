@@ -8,6 +8,7 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utility/WrapAsync");
 const ExpressError = require("./utility/ExpressError");
 const {listingSchema}=require("./schema.js");
+const Review=require("./models/review.js");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -83,6 +84,17 @@ app.get(
     res.render("./listings/show.ejs", { listing });
   })
 );
+
+//add a review form
+app.post("/listings/:id/review",wrapAsync(async(req,res)=>{
+   let {id}=req.params;
+   let review=req.body.review;
+  let newReview= await Review.insertOne(review);
+  let listing=await Listing.findById(id);
+  listing.reviews.push(newReview);
+  await listing.save({runValidators:true});
+  res.redirect(`/listings/${id}`);
+}));
 
 //create route
 app.post(
