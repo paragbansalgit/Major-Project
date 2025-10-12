@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md bg-body-light sticky-top border-bottom data-bs-spy='scroll'">
+    <nav class="navbar navbar-expand-md bg-body-light sticky-top border-bottom ">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><i class="fa-regular fa-compass"></i></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
@@ -20,6 +20,22 @@
                     <a class="nav-link" href="/listings">All Listings</a>
                     <a class="nav-link" href="/listings/new">Add new listings</a>
                 </div>
+
+                <div class="auth ms-auto">
+                    <% if(!currUser) {%>
+                    <div class="signin">
+                      <a class="btn btn-outline-success" href="/signup">signup</a>
+                    </div>
+                    <div class="logout">
+                      <a class="btn btn-outline-success" href="/login">login</a>
+                    </div>
+                    <% } else{%>
+                    <div>
+                        <a class="btn btn-outline-danger" href="/logout">logout</a>
+                    </div>
+                    <% } %>
+                </div>
+
             </div>
         </div>
     </nav>

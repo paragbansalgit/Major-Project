@@ -17,3 +17,10 @@
     }, false)
   })
 })()
+
+
+
+function toggleComment(id) {
+    const comment = document.getElementById(`comment-${id}`);
+    comment.classList.toggle('expanded');
+}

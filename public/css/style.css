@@ -28,6 +28,27 @@ body{
     color: #fe424d !important;
 }
 
+@media(max-width:768px)
+{
+    .listing-body{
+        margin-top: 5rem !important;
+    }
+    .navbar-collapse{
+        background-color: white !important;
+        margin-bottom: 1rem !important;
+    }
+}
+
+/* authentication navbar */
+
+.auth{
+    display: flex;
+    flex-wrap: wrap;
+}
+.signin,.logout{
+    margin-right: 10px;
+}
+
 /* footer */
 
 .f-info-links a{
@@ -70,8 +91,11 @@ body{
     width: 15rem !important;
     margin-bottom: 2rem !important;
     border: none !important;
-    display: block !important;   
     padding: 0 !important;
+}
+
+.display-card{
+    width: 70% !important;
 }
 
 .card-img-top{
@@ -81,6 +105,7 @@ body{
 }
 .card-body{
     padding: 0px !important;
+    width: 90% !important;
 }
 
 .row a{
@@ -149,20 +174,12 @@ body{
 
 .details {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap; /* Optional: allows wrapping on smaller screens */
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 100% !important;
 }
-
-.description {
-  flex: 1;
-  min-width: 200px;
-}
-
 .extra {
   flex: 1;
-  min-width: 200px;
   display: flex;
   flex-direction: column;
 }
@@ -174,4 +191,39 @@ body{
 .no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* review card */
+.review {
+    width: 45% !important;
+    border: 1px solid black !important;
+    border-radius: 25px !important;
+    display: flex;
+    flex-direction: column;
+    margin-left: 1rem;
+}
+
+.reviewbody{
+    margin-left: 10px;
+    margin-top: 10px;
+    position: relative;
+}
+
+.reviewtext {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.3s ease;
+}
+
+.reviewtext.expanded {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.reviewdelete{
+    position: relative;
+    bottom: 10px;
 }

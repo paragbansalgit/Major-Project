@@ -6,9 +6,16 @@ const Listing = require("./models/listing");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utility/WrapAsync");
-const ExpressError = require("./utility/ExpressError");
-const {listingSchema}=require("./schema.js");
-const Review=require("./models/review.js");
+const listingsRouter=require("./routes/listing");
+const reviewsRouter=require("./routes/review");
+const ExpressError=require("./utility/ExpressError");
+const session=require("express-session");
+const flash=require("express-flash");
+const passport=require("passport");
+const LocalStrategy=require("passport-local");
+const User=require("./models/user");
+const userRouter=require("./routes/user");
+
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -18,22 +25,22 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
+const sessionOptions={
+   secret:"mysupersecretkey",
+   resave:false,
+   saveUninitialized:true,
+   cookie:{
+      expries:Date.now()+3*24*60*60*1000,
+      maxAge:3*24*60*60*1000,
+      httpOnly:true
+   }
+}
+
+
 // app.use((req,res,next)=>{
 //     console.log(req.method,req.hostname,req.path);
 //     next();
 // })
-
-//validate listing
-const validateListing=(req,res,next)=>{
-    let {error}=listingSchema.validate(req.body);
-    if(error)
-    {
-        const errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
 
 //database connection
 const MONGO_URL = "mongodb://127.0.0.1:27017/property";
@@ -49,7 +56,37 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-//index route
+
+
+//session creation and flash messages
+app.use(session(sessionOptions));
+app.use(flash());
+
+//passport authentication 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req,res,next)=>{
+  res.locals.success=req.flash("success");
+  res.locals.error=req.flash("error");
+  res.locals.currUser=req.user;
+  next();
+})
+
+// demo User authentication
+// app.get("/demouser",async (req,res)=>{
+//   let fakeUser=new User({
+//      email:"student@gmail.com",
+//      username:"delta-student"
+//   });
+//  let registeredUser=await User.register(fakeUser,"helloworld");
+//  res.send(registeredUser);
+// })
+
+// home index route
 app.get(
   "/",
   wrapAsync(async (req, res) => {
@@ -58,90 +95,10 @@ app.get(
   })
 );
 
-//index route
-app.get(
-  "/listings",
-  wrapAsync(async (req, res) => {
-    const alllistings = await Listing.find();
-    res.render("./listings/index.ejs", { listings: alllistings });
-  })
-);
-
-//new route
-app.get("/listings/new", (req, res) => {
-  res.render("./listings/new.ejs");
-});
-
-//show route
-app.get(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id);
-    if (!listing) {
-      throw new ExpressError(404, "Listing not found");
-    }
-    res.render("./listings/show.ejs", { listing });
-  })
-);
-
-//add a review form
-app.post("/listings/:id/review",wrapAsync(async(req,res)=>{
-   let {id}=req.params;
-   let review=req.body.review;
-  let newReview= await Review.insertOne(review);
-  let listing=await Listing.findById(id);
-  listing.reviews.push(newReview);
-  await listing.save({runValidators:true});
-  res.redirect(`/listings/${id}`);
-}));
-
-//create route
-app.post(
-  "/listings",validateListing,
-  wrapAsync(async (req, res, next) => {
-    let listing = new Listing(...[req.body.listing]);
-    await listing.save({ runValidators: true });
-    res.redirect("/listings");
-  })
-);
-
-//edit route
-app.get(
-  "/listings/:id/edit",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id);
-    res.render("./listings/edit.ejs", { listing });
-  })
-);
-
-//update route
-app.patch(
-  "/listings/:id",validateListing,
-  wrapAsync(async (req, res) => {
-    if (!req.body || !req.body.listing) {
-      throw new ExpressError(400, "Enter valid data");
-    }
-    let { id } = req.params;
-    let listing = req.body.listing;
-    await Listing.findByIdAndUpdate(id, listing, { runValidators: true });
-    res.redirect(`/listings/${id}`);
-  })
-);
-
-//delete route
-app.delete(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing=await Listing.findByIdAndDelete(id);
-    if (!listing) {
-      throw new ExpressError(410, "Listing not found!");
-    }
-    res.redirect(`/listings`);
-  })
-);
+//routing of listings and reviews
+app.use("/listings",listingsRouter);
+app.use("/listings/:id/reviews",reviewsRouter);
+app.use("/",userRouter);
 
 //error handling
 app.use((req, res, next) => {
