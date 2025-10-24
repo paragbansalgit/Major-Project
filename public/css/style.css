@@ -45,9 +45,14 @@ body{
     display: flex;
     flex-wrap: wrap;
 }
-.signin,.logout{
-    margin-right: 10px;
+/* .signin,.logout{
+    margin-right: 1px;
+} */
+
+.signin :hover, .logout:hover{
+   color: #fe424d !important;
 }
+
 
 /* footer */
 
@@ -148,7 +153,7 @@ body{
 
 /* show page */
 .show-img {
-  width: 70vh !important;
+  width: 50%;
   height: 40vh;
   object-fit: cover;
   border-radius: 8px;
@@ -227,3 +232,28 @@ body{
     position: relative;
     bottom: 10px;
 }
+
+#map{
+    height: 50vh;
+    width: 80vh;
+}
+
+/* filters */
+    .filters{
+        margin-top: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
+    .filter{
+        text-align: center;
+        margin-right: 2rem;
+        opacity: .65;
+    }
+    .filter:hover{
+        opacity: 1;
+        cursor: pointer;
+    }
+    .filter p{
+        font-size: .8rem;
+    }

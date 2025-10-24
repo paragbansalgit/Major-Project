@@ -3,7 +3,7 @@
     <h2>Edit Listing</h2>
     <div class="row">
         <div class="col-6 offset-3">
-    <form action="/listings/<%= listing._id %>?_method=patch" method="post" class="needs-validation" novalidate>
+    <form action="/listings/<%= listing._id %>?_method=patch" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Title: </label>
             <input type="text" name="listing[title]" id="title" placeholder="enter place title" value="<%= listing.title %>" class="form-control" required>
@@ -19,10 +19,15 @@
                 Description should be valid
             </div>
         </div>
-        
+
+        <label for="image" class="form-label">Image Preview: </label>
+         <div class="mb-3">
+            <img src="<%= originalImageURL %>" alt="listing image" >
+        </div>
+
         <div class="mb-3">
-            <label for="image" class="form-label">Image Link: </label>
-            <input type="text" id="image" name="listing[image]" placeholder="enter image link" class="form-control" value="<%= listing.image %>" required>
+            <label for="image" class="form-label">Upload Image: </label>
+            <input type="file" id="image" name="listing[image]" class="form-control" value="<%= listing.image.filename %>">
             <div class="invalid-feedback">
                 Image should be valid
             </div>

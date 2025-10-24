@@ -1,3 +1,8 @@
+if(process.env.NODE_ENV != "production")
+{
+   require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -15,7 +20,6 @@ const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const User=require("./models/user");
 const userRouter=require("./routes/user");
-
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -87,13 +91,7 @@ app.use((req,res,next)=>{
 // })
 
 // home index route
-app.get(
-  "/",
-  wrapAsync(async (req, res) => {
-    const alllistings = await Listing.find();
-    res.render("./listings/index.ejs", { listings: alllistings });
-  })
-);
+
 
 //routing of listings and reviews
 app.use("/listings",listingsRouter);

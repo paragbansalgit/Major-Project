@@ -1,124 +1,66 @@
-const express=require("express");
-const router=express.Router();
+const express = require("express");
+const router = express.Router();
 const wrapAsync = require("../utility/WrapAsync");
-const ExpressError = require("../utility/ExpressError");
-const Listing = require("../models/listing");
-const {listingSchema}=require("../schema");
-const {isLoggedIn}=require("../middleware");
+// const ExpressError = require("../utility/ExpressError");
+// const Listing = require("../models/listing");
+const { isLoggedIn, isOwner, isValidateListing } = require("../middleware");
+const listingController=require("../controllers/listings");
+const multer=require("multer");
+const {storage}=require("../cloudConfig");
+const upload=multer({storage});
 
-//validate listing
-const validateListing=(req,res,next)=>{
-    let {error}=listingSchema.validate(req.body);
-    if(error)
-    {
-        const errMsg=error.details.map((el)=>el.message).join(",");
-        throw new ExpressError(400,errMsg);
-    }else{
-        next();
-    }
-}
-
-//index route
-router.get(
-  "/",isLoggedIn,
-  wrapAsync(async (req, res) => {
-    const alllistings = await Listing.find();
-    res.render("./listings/index.ejs", { listings: alllistings });
-  })
+router.route("/")
+.get(
+  // isLoggedIn,
+  wrapAsync(listingController.index)
+)
+.post(
+  isLoggedIn,
+  // (req, res, next) => {
+  //   // Convert price to number before validation
+  //   // if (req.body && typeof req.body.listing.price === "string") {
+  //   //   req.body.listing.price = Number(req.body.listing.price);
+  //   // }
+  //   next();
+  // },
+  upload.single("listing[image]"),isValidateListing,
+  wrapAsync(listingController.renderCreateForm)
 );
+
 
 //new route
-router.get("/new",isLoggedIn, (req, res) => {
-  res.render("./listings/new.ejs");
-});
-
-//show route
-router.get(
-  "/:id",isLoggedIn,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id).populate("reviews");
-    if (!listing) {
-      // throw new ExpressError(404, "Listing not found");
-      req.flash("error","Listing not found");
-      return res.redirect("/listings");
-    }
-    res.render("./listings/show.ejs", { listing});
-  })
-);
-
-//create route
-router.post(
-  "/",isLoggedIn,
-  (req, res, next) => {
-    // Convert price to number before validation
-    if (req.body.listing && typeof req.body.listing.price === "string") {
-      req.body.listing.price = Number(req.body.listing.price);
-    }
-    next();
-  },
-  validateListing,
-  wrapAsync(async (req, res) => {
-    const listing = new Listing(req.body.listing);
-    await listing.save({ runValidators: true });
-    req.flash("success","Listing added successfully");
-    res.redirect("/listings");
-  })
-);
-
+router.get("/new", isLoggedIn, listingController.renderNewForm);
 
 //edit route
 router.get(
-  "/:id/edit",isLoggedIn,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id);
-    if(!listing)
-    {
-      req.flash("error","Listing not found");
-      res.redirect("/listings");
-    }
-    res.render("./listings/edit.ejs", { listing });
-  })
+  "/:id/edit",
+  isLoggedIn,
+  isOwner,
+  wrapAsync(listingController.renderEditForm)
 );
 
-//update route
-router.patch(
-  "/:id",isLoggedIn,
-  (req, res, next) => {
-    // Convert price to number before validation
-    if (req.body.listing && typeof req.body.listing.price === "string") {
-      req.body.listing.price = Number(req.body.listing.price);
-    }
-    next();
-  },
-  validateListing,
-  wrapAsync(async (req, res) => {
-    if (!req.body || !req.body.listing) {
-      throw new ExpressError(400, "Enter valid data");
-    }
-    let { id } = req.params;
-    let listing = req.body.listing;
-    await Listing.findByIdAndUpdate(id, listing, { runValidators: true });
-    req.flash("success","Listing updated successfully");
-    res.redirect(`/listings/${id}`);
-  })
+router.route("/:id")
+.get(
+  wrapAsync(listingController.renderShow)
+)
+.patch(
+  isLoggedIn,
+  isOwner,
+  // (req, res, next) => {
+  //   // Convert price to number before validation
+  //   if (req.body.listing && typeof req.body.listing.price === "string") {
+  //     req.body.listing.price = Number(req.body.listing.price);
+  //   }
+  //   next();
+  // }
+  upload.single("listing[image]"),
+  isValidateListing,
+  wrapAsync(listingController.renderUpdate)
+)
+.delete(
+  isLoggedIn,
+  isOwner,
+  wrapAsync(listingController.renderDelete)
 );
 
-//delete route
-router.delete(
-  "/:id",isLoggedIn,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing=await Listing.findByIdAndDelete(id);
-    if (!listing) {
-      // throw new ExpressError(410, "Listing not found!");
-      req.flash("error","Listing not found");
-      res.redirect("/listings");
-    }
-    req.flash("success","Listing deleted successfully");
-    res.redirect(`/listings`);
-  })
-);
-
-module.exports=router;
+module.exports = router;

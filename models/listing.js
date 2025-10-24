@@ -9,13 +9,8 @@ const listingSchema = new mongoose.Schema({
     type: String,
   },
   image: {
-    type: String,
-    default:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY9pvV_P9h91LRghihGic-Bfd2J6gmTUeG8Q&s",
-    set: (v) =>
-  !v || v.trim() === ""
-    ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY9pvV_P9h91LRghihGic-Bfd2J6gmTUeG8Q&s"
-    : v,
+    url:String,
+    filename:String
   },
   price: {
     type: Number,
@@ -33,7 +28,15 @@ const listingSchema = new mongoose.Schema({
       type:mongoose.Schema.Types.ObjectId,
       ref:"Review"
     }
-  ]
+  ],
+  owner:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User"
+  },
+  category:{
+    type:String,
+    enum:["Trending","Rooms","Iconic Cities","Mountains","Castles","Amazing Pools","Camping","Farms","Arctic","Beaches"]
+  }
 });
 
 listingSchema.post("findOneAndDelete",async(listing)=>{

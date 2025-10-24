@@ -24,3 +24,16 @@ function toggleComment(id) {
     const comment = document.getElementById(`comment-${id}`);
     comment.classList.toggle('expanded');
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const alertElement = document.getElementById("autoDismissAlert");
+  console.log("Alert found:", alertElement); // Debug line
+  if (alertElement) {
+    setTimeout(function () {
+      const alertInstance = bootstrap.Alert.getOrCreateInstance(alertElement);
+      alertInstance.close();
+    }, 5000);
+  }
+});
+
+

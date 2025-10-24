@@ -20,8 +20,11 @@ location: Joi.string()
     'string.pattern.base': 'Location must contain only letters'
   }),
 
-  }).required()
-}).strict()// 👈 Apply strict mode here
+  category: Joi.string().required()
+  }).required(),
+
+
+})
 
 
 module.exports.reviewSchema=Joi.object({
