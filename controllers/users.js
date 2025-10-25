@@ -42,6 +42,6 @@ module.exports.renderLogOutForm=async (req, res, next) => {
         return next(err);
       }
       req.flash("success", "logged out successfully!");
-      res.redirect("/");
+      res.redirect("/listings");
     });
   }
