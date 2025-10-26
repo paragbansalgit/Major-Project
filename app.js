@@ -111,6 +111,15 @@ app.use((req,res,next)=>{
 
 // home index route
 
+app.get("/",wrapAsync(async(req,res,next)=>{
+   const alllistings = await Listing.find();
+    if(!alllistings)
+    {
+       req.flash("error","No listing found");
+       return res.redirect("/listings");
+    }
+    res.render("./listings/index.ejs", { listings: alllistings });
+}));
 
 //routing of listings and reviews
 app.use("/listings",listingsRouter);
