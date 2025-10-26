@@ -36,7 +36,7 @@ app.engine("ejs", ejsMate);
 const store=MongoStore.create({
   mongoUrl:process.env.DBATLAS,
   crypto: {
-    secret: 'mysupersecretkey',
+    secret: process.env.SECRET,
   },
   touchAfter:24*3600
 });
@@ -47,7 +47,7 @@ const store=MongoStore.create({
 
 const sessionOptions={
    store,
-   secret:"mysupersecretkey",
+   secret:process.env.SECRET,
    resave:false,
    saveUninitialized:true,
    cookie:{
