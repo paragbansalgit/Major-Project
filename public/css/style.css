@@ -243,7 +243,13 @@ body {
   margin-top: 1.5rem;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  flex-direction: row;
+ 
+}
+#filterbox{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 .filter {
   text-align: center;
@@ -266,32 +272,11 @@ body {
 {
   .filters{
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    flex-direction: row;
     overflow:scroll;
     height: 5rem;
     width: 100%;
-  }
-}
-
-@media (max-width: 546px) {
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-
-  .filter {
-    flex: 1 1 45%;
-    text-align: center;
-  }
-
-  .tax-toggle {
-    width: 100%;
-    margin-top: 10px;
   }
 }
 

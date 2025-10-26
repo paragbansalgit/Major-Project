@@ -15,11 +15,13 @@ const listingsRouter=require("./routes/listing");
 const reviewsRouter=require("./routes/review");
 const ExpressError=require("./utility/ExpressError");
 const session=require("express-session");
+const mongoStore=require("connect-mongo");
 const flash=require("express-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
 const User=require("./models/user");
 const userRouter=require("./routes/user");
+const MongoStore = require("connect-mongo");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -29,7 +31,22 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
+
+
+const store=MongoStore.create({
+  mongoUrl:process.env.DBATLAS,
+  crypto: {
+    secret: 'mysupersecretkey',
+  },
+  touchAfter:24*3600
+});
+
+// store.on("error",()=>{
+//   // console.log("some error occured in Mongo session store",err)
+// })
+
 const sessionOptions={
+   store,
    secret:"mysupersecretkey",
    resave:false,
    saveUninitialized:true,
@@ -47,7 +64,8 @@ const sessionOptions={
 // })
 
 //database connection
-const MONGO_URL = "mongodb://127.0.0.1:27017/property";
+// const MONGO_URL = "mongodb://127.0.0.1:27017/property";
+const dbAtlas=process.env.DBATLAS; //cloud storage
 main()
   .then(() => {
     console.log("db connected");
@@ -57,7 +75,7 @@ main()
   });
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  await mongoose.connect(dbAtlas);
 }
 
 
@@ -77,6 +95,7 @@ app.use((req,res,next)=>{
   res.locals.success=req.flash("success");
   res.locals.error=req.flash("error");
   res.locals.currUser=req.user;
+  res.locals.currPage=req.originalUrl;
   next();
 })
 
