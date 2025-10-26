@@ -238,6 +238,55 @@ body {
   width: 80vh;
 }
 
+@media (min-width : 768px)
+{
+  .map{
+    position: relative;
+    right: 25px !important;
+  }
+}
+/* map responsiveness */
+@media (max-width:768px)
+{
+   #map{
+    height: 40vh;
+    width: 60vh;
+   }
+   .map{
+     position: relative;
+     right: 90px;
+   }
+}
+
+@media (max-width:576px)
+{
+   #map{
+    height: 35vh;
+    width: 50vh;
+   }
+}
+
+@media (max-width:400px)
+{
+
+  .map{
+    position: relative;
+    left: -45px !important;
+  }
+  .show-img{
+    width: 40vh !important;
+  }
+
+  .review{
+    height: 30vh !important;
+    width: 40vh !important;
+  }
+   #map{
+    height: 30vh;
+    width: 35vh;
+   }
+}
+
 /* filters */
 .filters {
   margin-top: 1.5rem;
